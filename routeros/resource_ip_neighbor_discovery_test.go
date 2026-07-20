@@ -32,6 +32,15 @@ func TestAccIpNeighborDiscoverySettingsTest_basic(t *testing.T) {
 							resource.TestCheckResourceAttr(testIpNeighborDiscoverySettings, "discover_interface_list", "none"),
 						),
 					},
+					{
+						// Settings singleton: previously wired to ImportStateCustomContext,
+						// which requires a ".id" the object doesn't have. Verifies import now
+						// succeeds via passthrough (the read rebuilds the ID from the path).
+						ResourceName:      testIpNeighborDiscoverySettings,
+						ImportState:       true,
+						ImportStateId:     ".",
+						ImportStateVerify: false,
+					},
 				},
 			})
 		})
