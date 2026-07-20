@@ -112,8 +112,12 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		UpdateContext: DefaultSystemUpdate(resSchema),
 		DeleteContext: DefaultSystemDelete(resSchema),
 
+		// Settings singleton (DefaultSystemRead): there is no ".id"/"name" field to
+		// resolve, so use passthrough like the other *_settings singletons (ip_settings,
+		// system_identity). ImportStateCustomContext requires a ".id" in the response and
+		// fails on this object. Read ignores the import ID and rebuilds it from the path.
 		Importer: &schema.ResourceImporter{
-			StateContext: ImportStateCustomContext(resSchema),
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: resSchema,

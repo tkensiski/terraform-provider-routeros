@@ -196,6 +196,14 @@ func ResourceDns() *schema.Resource {
 			return nil
 		},
 
+		// Settings singleton (DefaultSystemRead): the /ip/dns object has no ".id"/"name"
+		// to resolve, so import via passthrough like the other *_settings singletons
+		// (ip_settings, system_identity). The read ignores the import ID and rebuilds it
+		// from the resource path.
+		Importer: &schema.ResourceImporter{
+			StateContext: schema.ImportStatePassthroughContext,
+		},
+
 		Schema:        resSchema,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{

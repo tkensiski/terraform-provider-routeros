@@ -2,6 +2,7 @@ package routeros
 
 import (
 	"context"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -125,8 +126,31 @@ func ResourceIpService() *schema.Resource {
 		UpdateContext: resCreateUpdate,
 		DeleteContext: DefaultSystemDelete(resSchema),
 
+		// ip_service is a fixed, name-addressed menu (IdType=Name): Create/Update/Read all
+		// key on the service name, and the API returns "name" — never the schema's Required
+		// "numbers" selector. Import by the service name (as the docs show:
+		// `terraform import '...["www-ssl"]' www-ssl`) and seed "numbers" from it so the
+		// post-import read is drift-free. Plain passthrough would leave "numbers" empty
+		// (the read never sets it), and the generic ImportStateCustomContext would instead
+		// store the internal ".id" (e.g. *6), which the name-keyed read can't find.
 		Importer: &schema.ResourceImporter{
-			StateContext: ImportStateCustomContext(resSchema),
+			StateContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) ([]*schema.ResourceData, error) {
+				// Import by service name, e.g. `www-ssl`. The provider-wide
+				// `field=value` form is also accepted for the name/numbers fields
+				// (e.g. `name=www-ssl`).
+				id := d.Id()
+				if k, v, found := strings.Cut(id, "="); found && (k == "name" || k == "numbers") {
+					id = v
+					d.SetId(id)
+				}
+				// Seed the Required "numbers" selector from the ID: the API returns
+				// "name" but never "numbers", so without this the imported resource
+				// would show a permanent diff on "numbers".
+				if err := d.Set("numbers", id); err != nil {
+					return nil, err
+				}
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 
 		Schema: resSchema,

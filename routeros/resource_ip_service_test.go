@@ -25,6 +25,16 @@ func TestAccIpServiceTest_basic(t *testing.T) {
 							resource.TestCheckResourceAttr(testIpServiceAddress, "name", "telnet"),
 						),
 					},
+					{
+						// Import by service name (IdType=Name). Verifies the state
+						// round-trips with no drift — in particular that the Required
+						// "numbers" selector is seeded from the import ID (the API only
+						// returns "name", never "numbers").
+						ResourceName:      testIpServiceAddress,
+						ImportState:       true,
+						ImportStateId:     "telnet",
+						ImportStateVerify: true,
+					},
 				},
 			})
 		})
