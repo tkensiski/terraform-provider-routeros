@@ -92,6 +92,11 @@ func ResourceInterfaceBridgePort() *schema.Resource {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
+		"actual_path_cost": {
+			Type:        schema.TypeInt,
+			Computed:    true,
+			Description: "The actual port path cost, either manually applied or auto-derived from interface speed and port-cost-mode.",
+		},
 		"auto_isolate": {
 			Type:     schema.TypeBool,
 			Optional: true,
@@ -249,6 +254,11 @@ func ResourceInterfaceBridgePort() *schema.Resource {
 			Type:        schema.TypeBool,
 			Computed:    true,
 			Description: "Shows whether the port is capable of learning MAC addresses.",
+		},
+		"managed": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Undocumented bridge-port property returned by the RouterOS API; surfaced read-only.",
 		},
 		"multicast_router": {
 			Type:     schema.TypeString,
@@ -421,6 +431,20 @@ func ResourceInterfaceBridgePort() *schema.Resource {
 			Description: "When enabled, it allows to forward DHCP packets towards DHCP server through this port. " +
 				"Mainly used to limit unauthorized servers to provide malicious information for users. " +
 				"This property only has effect when dhcp-snooping is set to yes.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"trusted_dhcpv6": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Allows forwarding DHCPv6 packets toward the server through this port (effective when bridge " +
+				"dhcpv6-snooping is enabled). Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"trusted_ra": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Marks the port as permitted to forward IPv6 RA messages (effective when bridge ra-guard " +
+				"is enabled). Available since RouterOS 7.22.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"unknown_multicast_flood": {

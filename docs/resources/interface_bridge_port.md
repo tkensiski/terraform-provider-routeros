@@ -44,11 +44,14 @@ resource "routeros_interface_bridge_port" "bridge_port" {
 - `restricted_tcn` (Boolean) Disable topology change notification (TCN) sending on a port, used by STP to forbid network topology changes to propagate. This property only has effect when protocol-mode is set to mstp.
 - `tag_stacking` (Boolean) Forces all packets to be treated as untagged packets. Packets on ingress port will be tagged with another VLAN tag regardless if a VLAN tag already exists, packets will be tagged with a VLAN ID that matches the pvid value and will use EtherType that is specified in ether-type. This property only has effect when vlan-filtering is set to yes.
 - `trusted` (Boolean) When enabled, it allows to forward DHCP packets towards DHCP server through this port. Mainly used to limit unauthorized servers to provide malicious information for users. This property only has effect when dhcp-snooping is set to yes.
+- `trusted_dhcpv6` (Boolean) Allows forwarding DHCPv6 packets toward the server through this port (effective when bridge dhcpv6-snooping is enabled). Available since RouterOS 7.23.
+- `trusted_ra` (Boolean) Marks the port as permitted to forward IPv6 RA messages (effective when bridge ra-guard is enabled). Available since RouterOS 7.22.
 - `unknown_multicast_flood` (Boolean) When enabled, bridge floods unknown multicast traffic to all bridge egress ports.
 - `unknown_unicast_flood` (Boolean) When enabled, bridge floods unknown unicast traffic to all bridge egress ports.
 
 ### Read-Only
 
+- `actual_path_cost` (Number) The actual port path cost, either manually applied or auto-derived from interface speed and port-cost-mode.
 - `designated_bridge` (String) Root bridge ID (bridge priority and the bridge MAC address).
 - `designated_bridge_id` (String) Shows the designated bridge identifier, as determined from the port's priority vector.
 - `designated_cost` (String) Designated cost.
@@ -65,6 +68,7 @@ resource "routeros_interface_bridge_port" "bridge_port" {
 - `inactive` (Boolean)
 - `last_topology_change` (String) Last topology change timer, records time since the last change.
 - `learning` (Boolean) Shows whether the port is capable of learning MAC addresses.
+- `managed` (Boolean) Undocumented bridge-port property returned by the RouterOS API; surfaced read-only.
 - `nextid` (String)
 - `point_to_point_port` (Boolean) Whether the port is connected to a bridge port using full-duplex (true) or half-duplex (false).
 - `port_id` (String) In Spanning Tree Protocol each port has a unique Port Identifier. Priority[hex] + port number.

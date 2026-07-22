@@ -47,6 +47,12 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
+		"dhcpv6_snooping": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "Enables DHCPv6 snooping on the bridge. Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,
 		"ether_type": {
@@ -132,6 +138,11 @@ func ResourceInterfaceBridge() *schema.Resource {
 			RequiredWith:     []string{"igmp_snooping"},
 		},
 		KeyMacAddress: PropMacAddressRo,
+		"managed": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Undocumented bridge property returned by the RouterOS API; surfaced read-only.",
+		},
 		"max_hops": {
 			Type:     schema.TypeInt,
 			Optional: true,
@@ -162,6 +173,25 @@ func ResourceInterfaceBridge() *schema.Resource {
 				"report is not received on a certain port. This property only has effect when igmp-snooping is set to yes.",
 			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping"},
+		},
+		"mlag_heartbeat": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "MLAG heartbeat transmit interval between peers. Configured on the bridge since RouterOS 7.22.",
+			DiffSuppressFunc: TimeEqual,
+		},
+		"mlag_peer_port": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "MLAG peer-link port(s) for ICCP peer communication and host-table sync. Configured on the bridge since RouterOS 7.22.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"mlag_priority": {
+			Type:             schema.TypeInt,
+			Optional:         true,
+			Description:      "MLAG primary-node election priority; the lowest priority becomes primary. Configured on the bridge since RouterOS 7.22.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+			ValidateFunc:     validation.IntBetween(0, 128),
 		},
 		"mld_version": {
 			Type:     schema.TypeInt,
@@ -270,6 +300,12 @@ func ResourceInterfaceBridge() *schema.Resource {
 				"report. This property only has effect when igmp-snooping and multicast-querier is set to yes.",
 			DiffSuppressFunc: TimeEqual,
 			RequiredWith:     []string{"igmp_snooping", "multicast_querier"},
+		},
+		"ra_guard": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "IPv6 RA guard. Validates incoming Router Advertisements against the list of trusted ports. Available since RouterOS 7.22.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		KeyRunning: PropRunningRo,
 		"region_name": {

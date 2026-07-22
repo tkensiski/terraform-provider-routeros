@@ -33,6 +33,7 @@ resource "routeros_interface_bridge" "bridge" {
 - `auto_mac` (Boolean) Automatically select one MAC address of bridge ports as a bridge MAC address, bridge MAC will be chosen from the first added bridge port. After a device reboot, the bridge MAC can change depending on the port-number.
 - `comment` (String)
 - `dhcp_snooping` (Boolean)
+- `dhcpv6_snooping` (Boolean) Enables DHCPv6 snooping on the bridge. Available since RouterOS 7.23.
 - `disabled` (Boolean)
 - `ether_type` (String) This property only has effect when vlan-filtering is set to yes.
 - `fast_forward` (Boolean)
@@ -48,6 +49,9 @@ resource "routeros_interface_bridge" "bridge" {
 - `max_learned_entries` (String) An option to set the maximum number of learned hosts for the bridge interface. This option is available in RouterOS starting from version 7.16.
 - `max_message_age` (String) Changes the Max Age value in BPDU packets, which is transmitted by the root bridge. This property only has effect when protocol-mode is set to stp or rstp. Value: 6s..40s
 - `membership_interval` (String) Amount of time after an entry in the Multicast Database (MDB) is removed if a IGMP membership report is not received on a certain port. This property only has effect when igmp-snooping is set to yes.
+- `mlag_heartbeat` (String) MLAG heartbeat transmit interval between peers. Configured on the bridge since RouterOS 7.22.
+- `mlag_peer_port` (String) MLAG peer-link port(s) for ICCP peer communication and host-table sync. Configured on the bridge since RouterOS 7.22.
+- `mlag_priority` (Number) MLAG primary-node election priority; the lowest priority becomes primary. Configured on the bridge since RouterOS 7.22.
 - `mld_version` (Number) Selects the MLD version. Version 2 adds support for source-specific multicast. This property only has effect when RouterOS IPv6 package is enabled and igmp-snooping is set to yes.
 - `mtu` (String) The default bridge MTU value without any bridge ports added is 1500. The MTU value can be set manually, but it cannot exceed the bridge L2MTU or the lowest bridge port L2MTU. If a new bridge port is added with L2MTU which is smaller than the actual-mtu of the bridge (set by the mtu property), then manually set value will be ignored and the bridge will act as if mtu=auto is set.
 - `multicast_querier` (Boolean) Multicast querier generates IGMP general membership queries to which all IGMP capable devices respond with an IGMP membership report, usually a PIM (multicast) router or IGMP proxy generates these queries. This property only has an effect when igmp-snooping is set to yes. Additionally, the igmp-snooping should be disabled/enabled after changing multicast-querier property.
@@ -60,6 +64,7 @@ resource "routeros_interface_bridge" "bridge" {
 - `querier_interval` (String) Used to change the interval how often a bridge checks if it is the active multicast querier. This property only has effect when igmp-snooping and multicast-querier is set to yes.
 - `query_interval` (String) Used to change the interval how often IGMP general membership queries are sent out. This property only has effect when igmp-snooping and multicast-querier is set to yes.
 - `query_response_interval` (String) Interval in which a IGMP capable device must reply to a IGMP query with a IGMP membership report. This property only has effect when igmp-snooping and multicast-querier is set to yes.
+- `ra_guard` (Boolean) IPv6 RA guard. Validates incoming Router Advertisements against the list of trusted ports. Available since RouterOS 7.22.
 - `region_name` (String) MSTP region name. This property only has effect when protocol-mode is set to mstp.
 - `region_revision` (Number) MSTP configuration revision number. This property only has effect when protocol-mode is set to mstp.
 - `startup_query_count` (Number) Specifies how many times must startup-query-interval pass until the bridge starts sending out IGMP general membership queries periodically. This property only has effect when igmp-snooping and multicast-querier is set to yes.
@@ -74,6 +79,7 @@ resource "routeros_interface_bridge" "bridge" {
 - `id` (String) The ID of this resource.
 - `l2mtu` (Number) Layer2 Maximum transmission unit. [See](https://wiki.mikrotik.com/wiki/Maximum_Transmission_Unit_on_RouterBoards).
 - `mac_address` (String) Current mac address.
+- `managed` (Boolean) Undocumented bridge property returned by the RouterOS API; surfaced read-only.
 - `running` (Boolean)
 
 ## Import

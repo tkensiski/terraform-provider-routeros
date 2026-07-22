@@ -51,6 +51,11 @@ func ResourceInterfaceBridgeVlan() *schema.Resource {
 		},
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,
+		"managed": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Undocumented bridge-VLAN property returned by the RouterOS API; surfaced read-only.",
+		},
 		"mvrp_forbidden": {
 			Type:     schema.TypeList,
 			Optional: true,

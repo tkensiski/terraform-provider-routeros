@@ -366,6 +366,16 @@ func ResourceSystemCertificate() *schema.Resource {
 			Description:      "SANs (subject alternative names).",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		"trust_store": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Description: "Designates which service may use this certificate for verification and trust-chain " +
+				"creation. Available since RouterOS 7.21.",
+			ValidateFunc: validation.StringInSlice([]string{"all", "capsman", "dns", "email", "ipsec", "mqtt",
+				"openflow", "radius", "sstp", "userman", "www", "api", "container", "dot1x", "fetch", "lora",
+				"netwatch", "ovpn", "tr069", "wpa-eap"}, false),
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"trusted": {
 			Type:             schema.TypeBool,
 			Optional:         true,

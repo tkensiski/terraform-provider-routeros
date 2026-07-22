@@ -16,6 +16,18 @@ func ResourceDhcpServer() *schema.Resource {
 			Optional:    true,
 			Description: "Whether to add dynamic ARP entry. ",
 		},
+		"add_dns_entries": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "When enabled, the DHCP server creates local DNS entries for its leases. Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"add_dns_entries_suffix": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "DNS name suffix appended to the entries added for leases; used only when add-dns-entries is enabled. Available since RouterOS 7.23.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"address_pool": {
 			Type:     schema.TypeString,
 			Optional: true,

@@ -55,6 +55,7 @@ resource "routeros_interface_bonding" "test" {
 ### Read-Only
 
 - `id` (String) The ID of this resource.
+- `lacp_system_priority` (Number) Local LACP system priority for 802.3ad. Read-only.
 - `mac_address` (String) Current mac address.
 - `running` (Boolean)
 
