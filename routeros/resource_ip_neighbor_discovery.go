@@ -20,6 +20,18 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/ip/neighbor/discovery-settings"),
 		MetaId:           PropId(Id),
 
+		"add_dns_entries": {
+			Type:             schema.TypeBool,
+			Optional:         true,
+			Description:      "Whether to add DNS A records for the IP addresses of discovered neighbors.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"add_dns_entries_suffix": {
+			Type:             schema.TypeString,
+			Optional:         true,
+			Description:      "DNS name suffix appended to the entries added for discovered neighbors (see `add_dns_entries`).",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
 		"discover_interface_list": {
 			Type:             schema.TypeString,
 			Optional:         true,
@@ -55,6 +67,13 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 			Optional: true,
 			Description: "Whether to send Maximum Frame Size TLV in LLDP, which indicates the maximum frame size capability" +
 				" of the interface in bytes (`l2mtu + 18`). Only applies to the Ethernet interfaces.",
+			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		"lldp_med": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Description: "Whether to send LLDP-MED (Media Endpoint Discovery) extension TLVs, used to advertise " +
+				"network policy such as the voice VLAN to endpoints like VoIP phones. See also `lldp_med_net_policy_vlan`.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
 		"lldp_med_net_policy_vlan": {
@@ -112,8 +131,12 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		UpdateContext: DefaultSystemUpdate(resSchema),
 		DeleteContext: DefaultSystemDelete(resSchema),
 
+		// Settings singleton (DefaultSystemRead): there is no ".id"/"name" field to
+		// resolve, so use passthrough like the other *_settings singletons (ip_settings,
+		// system_identity). ImportStateCustomContext requires a ".id" in the response and
+		// fails on this object. Read ignores the import ID and rebuilds it from the path.
 		Importer: &schema.ResourceImporter{
-			StateContext: ImportStateCustomContext(resSchema),
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: resSchema,
