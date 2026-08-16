@@ -28,6 +28,15 @@ func TestAccResourceDnsTest_basic(t *testing.T) {
 					{
 						Config: testAccResourceDnsConfig(),
 					},
+					{
+						// Settings singleton: previously had no Importer at all.
+						// Verifies import now succeeds via passthrough (the read
+						// rebuilds the ID from the resource path).
+						ResourceName:      testResourceDnsTask,
+						ImportState:       true,
+						ImportStateId:     ".",
+						ImportStateVerify: false,
+					},
 				},
 			})
 
