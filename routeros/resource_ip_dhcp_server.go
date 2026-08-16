@@ -16,6 +16,21 @@ func ResourceDhcpServer() *schema.Resource {
 			Optional:    true,
 			Description: "Whether to add dynamic ARP entry. ",
 		},
+		// Optional+Computed rather than AlwaysPresentNotUserProvided: the suppressor
+		// hides genuine out-of-band changes, and a Default would make Terraform write
+		// these properties to RouterOS builds older than 7.23 that do not know them.
+		"add_dns_entries": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Computed:    true,
+			Description: "When enabled, the DHCP server creates local DNS entries for its leases. Available since RouterOS 7.23.",
+		},
+		"add_dns_entries_suffix": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "DNS name suffix appended to the entries added for leases; used only when add-dns-entries is enabled. Available since RouterOS 7.23.",
+		},
 		"address_pool": {
 			Type:     schema.TypeString,
 			Optional: true,

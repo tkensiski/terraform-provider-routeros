@@ -94,7 +94,16 @@ func ResourceDhcpClient() *schema.Resource {
 		},
 		KeyInterface: PropInterfaceRw,
 		KeyInvalid:   PropInvalidRo,
-		KeyName:      PropNameOptional("Name of the DHCP client. Available in RouterOS starting from version 7.22."),
+		// Field added by #992 (Levi Zitting); kept here without PropNameOptional,
+		// because that helper carries AlwaysPresentNotUserProvided and would hide an
+		// out-of-band rename. RouterOS generates the name when it is not supplied, so
+		// Computed covers the unset case without suppressing a real diff.
+		KeyName: {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "Name of the DHCP client. Available in RouterOS starting from version 7.22.",
+		},
 		"primary_dns": {
 			Type:        schema.TypeString,
 			Computed:    true,
