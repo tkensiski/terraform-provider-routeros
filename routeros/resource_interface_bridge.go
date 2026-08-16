@@ -47,6 +47,15 @@ func ResourceInterfaceBridge() *schema.Resource {
 			Type:     schema.TypeBool,
 			Optional: true,
 		},
+		// Optional+Computed rather than AlwaysPresentNotUserProvided: the suppressor
+		// hides genuine out-of-band changes, and a Default would make Terraform write
+		// the property to RouterOS builds older than 7.23 that do not know it.
+		"dhcpv6_snooping": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Computed:    true,
+			Description: "Enables DHCPv6 snooping on the bridge. Available since RouterOS 7.23.",
+		},
 		KeyDisabled: PropDisabledRw,
 		KeyDynamic:  PropDynamicRo,
 		"ether_type": {
@@ -132,6 +141,11 @@ func ResourceInterfaceBridge() *schema.Resource {
 			RequiredWith:     []string{"igmp_snooping"},
 		},
 		KeyMacAddress: PropMacAddressRo,
+		"managed": {
+			Type:        schema.TypeBool,
+			Computed:    true,
+			Description: "Undocumented bridge property returned by the RouterOS API; surfaced read-only.",
+		},
 		"max_hops": {
 			Type:     schema.TypeInt,
 			Optional: true,
