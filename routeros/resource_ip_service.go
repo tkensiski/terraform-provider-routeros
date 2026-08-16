@@ -54,6 +54,16 @@ func resolveIpServiceId(name string, c Client) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	// RouterOS only grew the `dynamic` property on /ip/service in 7.20, when it
+	// started returning per-connection rows. On older builds the filter above
+	// matches nothing, so fall back to a name-only lookup. That stays correct on
+	// 7.20+, where an empty filtered result means the service really is absent.
+	if len(*res) == 0 {
+		res, err = ReadItemsFiltered([]string{"name=" + name}, "/ip/service", c)
+		if err != nil {
+			return "", err
+		}
+	}
 	if len(*res) == 0 {
 		return "", fmt.Errorf("ip service not found: name=%s", name)
 	}
@@ -165,7 +175,7 @@ func ResourceIpService() *schema.Resource {
 
 	return &schema.Resource{
 		CreateContext: resCreateUpdate,
-		ReadContext:   func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+		ReadContext: func(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 			return resourceIpServiceRead(ctx, resSchema, d, m)
 		},
 		UpdateContext: resCreateUpdate,
@@ -188,6 +198,15 @@ func resourceIpServiceRead(ctx context.Context, s map[string]*schema.Schema, d *
 	)
 	if err != nil {
 		return diag.FromErr(err)
+	}
+	// Pre-7.20 RouterOS has no `dynamic` property on /ip/service, so the filter
+	// above matches nothing and the row would look deleted. Retry on `.id` alone
+	// before concluding the resource is gone.
+	if len(*res) == 0 {
+		res, err = ReadItemsFiltered([]string{".id=" + d.Id()}, "/ip/service", m.(Client))
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 	if len(*res) == 0 {
 		// Resource gone; let Terraform recreate.
@@ -227,6 +246,17 @@ func importIpServiceState(ctx context.Context, d *schema.ResourceData, m interfa
 	)
 	if err != nil {
 		return nil, err
+	}
+	// Pre-7.20 RouterOS has no `dynamic` property on /ip/service, so importing by
+	// name would fail there. Retry without the filter before giving up.
+	if len(*res) == 0 {
+		res, err = ReadItemsFiltered(
+			[]string{SnakeToKebab(field) + "=" + value},
+			"/ip/service", m.(Client),
+		)
+		if err != nil {
+			return nil, err
+		}
 	}
 	switch len(*res) {
 	case 0:
