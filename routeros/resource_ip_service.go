@@ -186,7 +186,56 @@ func ResourceIpService() *schema.Resource {
 		},
 
 		Schema: resSchema,
+		// Version 0 stored the service name as the resource id. Migrate those
+		// states to the `.id` handle, so an existing service is read rather
+		// than reported as absent and planned for creation.
+		//
+		// Only the meaning of the id changed; the attributes are identical, so
+		// the upgrader matches against this same schema rather than a copy.
+		SchemaVersion: 1,
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type:    (&schema.Resource{Schema: resSchema}).CoreConfigSchema().ImpliedType(),
+				Upgrade: stateMigrationIpServiceNameToId,
+				Version: 0,
+			},
+		},
 	}
+}
+
+// stateMigrationIpServiceNameToId rewrites a version 0 state, whose id is a
+// service name such as "www-ssl", into a version 1 state whose id is the
+// RouterOS handle such as "*6".
+//
+// Without it the version 1 read filters on `.id=www-ssl`, matches nothing, and
+// reports the service as absent, so Terraform plans to create a service that
+// already exists. The apply recovers, because create posts to /ip/service/set
+// and RouterOS applies that to the existing row, but the plan misreports what
+// it is about to do.
+//
+// Upgraders receive the configured provider, so the name is resolved against
+// the device rather than guessed.
+func stateMigrationIpServiceNameToId(ctx context.Context, rawState map[string]interface{}, m interface{}) (map[string]interface{}, error) {
+	id, ok := rawState["id"].(string)
+	if !ok || id == "" {
+		return rawState, nil
+	}
+
+	// Already a RouterOS handle, so the state needs no migration.
+	if id[0] == '*' {
+		return rawState, nil
+	}
+
+	resolved, err := resolveIpServiceId(id, m.(Client))
+	if err != nil {
+		// The service is absent from the device. Leave the id alone and let the
+		// read decide; failing here would block the whole plan.
+		ColorizedMessage(ctx, WARN, "ip service "+id+" not found while upgrading state: "+err.Error())
+		return rawState, nil
+	}
+
+	rawState["id"] = resolved
+	return rawState, nil
 }
 
 // resourceIpServiceRead Read filtered to the static (non-dynamic) row only,
