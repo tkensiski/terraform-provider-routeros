@@ -59,6 +59,10 @@ func ctxGetCrudMethod(ctx context.Context) crudMethod {
 //		return ResourceCreate(ctxSetCrudMethod(ctx, crudGenerateKey), resSchema, d, m)
 //	},
 func ResourceCreate(ctx context.Context, s map[string]*schema.Schema, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if diags := CheckAttributeAvailability(s, d); diags.HasError() {
+		return diags
+	}
+
 	item, metadata := TerraformResourceDataToMikrotik(s, d)
 
 	res, err := CreateItem(ctx, item, metadata.Path, m.(Client))
@@ -257,6 +261,10 @@ func ResourceRead(ctx context.Context, s map[string]*schema.Schema, d *schema.Re
 
 // ResourceUpdate Updating the resource in accordance with the TF Schema.
 func ResourceUpdate(ctx context.Context, s map[string]*schema.Schema, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	if diags := CheckAttributeAvailability(s, d); diags.HasError() {
+		return diags
+	}
+
 	item, metadata := TerraformResourceDataToMikrotik(s, d)
 
 	// d.Id() can be the name of a resource or its identifier.

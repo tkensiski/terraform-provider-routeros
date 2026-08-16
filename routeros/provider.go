@@ -18,6 +18,14 @@ var (
 //
 //go:generate go run ../tools/drift/main.go
 func Provider() *schema.Provider {
+	p := newProvider()
+	// Report attributes the running RouterOS does not support during plan,
+	// rather than letting the device silently discard them on apply.
+	AttachVersionAvailabilityChecks(p.ResourcesMap)
+	return p
+}
+
+func newProvider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"hosturl": {
