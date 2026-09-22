@@ -50,7 +50,7 @@ resource "routeros_ip_service" "enabled" {
 
 ### Required
 
-- `numbers` (String) The name of the service whose settings will be changed ( api, api-ssl, ftp, ssh, telnet, winbox, www, www-ssl ).
+- `numbers` (String) The name of the service whose settings will be changed ( api, api-ssl, ftp, reverse-proxy, ssh, telnet, winbox, www, www-ssl ).
 - `port` (Number) The port particular service listens on.
 
 ### Optional

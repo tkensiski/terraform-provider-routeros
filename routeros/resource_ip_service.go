@@ -120,10 +120,10 @@ func ResourceIpService() *schema.Resource {
 		"numbers": {
 			Type:     schema.TypeString,
 			Required: true,
-			Description: "The name of the service whose settings will be changed ( api, api-ssl, ftp, ssh, telnet, " +
-				"winbox, www, www-ssl ).",
-			ValidateDiagFunc: ValidationMultiValInSlice([]string{"api", "api-ssl", "ftp", "ssh", "telnet", "winbox",
-				"www", "www-ssl"}, false, false),
+			Description: "The name of the service whose settings will be changed ( api, api-ssl, ftp, reverse-proxy, " +
+				"ssh, telnet, winbox, www, www-ssl ).",
+			ValidateDiagFunc: ValidationMultiValInSlice([]string{"api", "api-ssl", "ftp", "reverse-proxy", "ssh",
+				"telnet", "winbox", "www", "www-ssl"}, false, false),
 		},
 		"port": {
 			Type:         schema.TypeInt,
