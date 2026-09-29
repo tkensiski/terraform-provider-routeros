@@ -32,6 +32,7 @@ resource "routeros_interface_vlan" "interface_vlan" {
 - `comment` (String)
 - `disabled` (Boolean)
 - `hw_offloaded` (Boolean)
+- `l3_hw_offloading` (Boolean) Enables or disables L3 Hardware Offloading (L3HW) on a per-VLAN interface. Only applicable to devices that support L3HW offloading, and available since RouterOS 7.21.
 - `loop_protect` (String)
 - `loop_protect_disable_time` (String)
 - `loop_protect_send_interval` (String)
