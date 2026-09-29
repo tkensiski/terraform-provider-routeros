@@ -20,6 +20,24 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 		MetaResourcePath: PropResourcePath("/ip/neighbor/discovery-settings"),
 		MetaId:           PropId(Id),
 
+		// Optional+Computed rather than AlwaysPresentNotUserProvided: the suppressor
+		// hides genuine out-of-band changes, and a Default would make Terraform write
+		// these properties to RouterOS builds older than 7.23 that do not know them.
+		// This departs from this resource's own existing AlwaysPresentNotUserProvided
+		// convention deliberately -- see feat/ros-7.23-read-fields.
+		"add_dns_entries": {
+			Type:        schema.TypeBool,
+			Optional:    true,
+			Computed:    true,
+			Description: "Whether to add local DNS entries for discovered neighbors. Available since RouterOS 7.23.",
+		},
+		"add_dns_entries_suffix": {
+			Type:     schema.TypeString,
+			Optional: true,
+			Computed: true,
+			Description: "DNS name suffix appended to the entries added for discovered neighbors; used only when " +
+				"add-dns-entries is enabled. Available since RouterOS 7.23.",
+		},
 		"discover_interface_list": {
 			Type:             schema.TypeString,
 			Optional:         true,
@@ -56,6 +74,15 @@ func ResourceIpNeighborDiscoverySettings() *schema.Resource {
 			Description: "Whether to send Maximum Frame Size TLV in LLDP, which indicates the maximum frame size capability" +
 				" of the interface in bytes (`l2mtu + 18`). Only applies to the Ethernet interfaces.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
+		},
+		// Optional+Computed rather than AlwaysPresentNotUserProvided -- see the
+		// add_dns_entries comment above.
+		"lldp_med": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Computed: true,
+			Description: "Whether to advertise the LLDP-MED Media Capabilities TLV. Must be enabled when " +
+				"lldp_med_net_policy_vlan is used. Available since RouterOS 7.23.",
 		},
 		"lldp_med_net_policy_vlan": {
 			Type:     schema.TypeString,

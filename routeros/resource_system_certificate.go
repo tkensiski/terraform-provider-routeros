@@ -366,6 +366,20 @@ func ResourceSystemCertificate() *schema.Resource {
 			Description:      "SANs (subject alternative names).",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		// Optional+Computed rather than AlwaysPresentNotUserProvided: the suppressor
+		// hides genuine out-of-band changes, and a Default would make Terraform write
+		// this property to RouterOS builds older than 7.21 that do not know it. This
+		// departs from this resource's own existing AlwaysPresentNotUserProvided
+		// convention deliberately -- see feat/ros-7.23-read-fields.
+		"trust_store": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Computed:    true,
+			Description: "Built-in trust store elements to enable. Available since RouterOS 7.21.",
+			ValidateFunc: validation.StringInSlice([]string{"all", "capsman", "dns", "email", "ipsec", "mqtt",
+				"openflow", "radius", "sstp", "userman", "www", "api", "container", "dot1x", "fetch", "lora",
+				"netwatch", "ovpn", "tr069", "wpa-eap"}, false),
+		},
 		"trusted": {
 			Type:             schema.TypeBool,
 			Optional:         true,

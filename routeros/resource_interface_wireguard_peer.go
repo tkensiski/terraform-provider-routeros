@@ -28,6 +28,20 @@ func ResourceInterfaceWireguardPeer() *schema.Resource {
 				"wg interface is set on that device.",
 			DiffSuppressFunc: AlwaysPresentNotUserProvided,
 		},
+		// Optional+Computed rather than AlwaysPresentNotUserProvided: the suppressor
+		// hides genuine out-of-band changes, and a Default would make Terraform write
+		// this property to RouterOS builds older than 7.21 that do not know it.
+		"client_allowed_address": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Computed: true,
+			Description: "List of CIDRs used on the client side to set up routes. Use 0.0.0.0/0 or ::/0 to route " +
+				"all traffic through the WireGuard tunnel, or specify individual CIDRs to route only specific " +
+				"traffic. Available since RouterOS 7.21.",
+			Elem: &schema.Schema{
+				Type: schema.TypeString,
+			},
+		},
 		"client_dns": {
 			Type:             schema.TypeString,
 			Optional:         true,

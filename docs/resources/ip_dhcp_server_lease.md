@@ -37,6 +37,8 @@ resource "routeros_ip_dhcp_server_lease" "dhcp_lease" {
 ### Read-Only
 
 - `active_address` (String) The IP address of the machine currently holding the DHCP lease.
+- `active_agent_circuit_id` (String) Actual DHCP relay agent circuit ID of the machine currently holding the DHCP lease.
+- `active_agent_remote_id` (String) Actual DHCP relay agent remote ID of the machine currently holding the DHCP lease.
 - `active_client_id` (String) Actual client-id of the client.
 - `active_hostname` (String) The hostname of the machine currently holding the DHCP lease.
 - `active_mac_address` (String) The MAC address of of the machine currently holding the DHCP lease.

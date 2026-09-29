@@ -124,6 +124,7 @@ EOT
 - `sign_via_scep` (Block Set) (see [below for nested schema](#nestedblock--sign_via_scep))
 - `state` (String) State or Province Name (full name).
 - `subject_alt_name` (String) SANs (subject alternative names).
+- `trust_store` (String) Built-in trust store elements to enable. Available since RouterOS 7.21.
 - `trusted` (Boolean) If set to yes certificate is included 'in trusted certificate chain'.
 - `unit` (String) Organizational Unit Name (eg, section).
 
