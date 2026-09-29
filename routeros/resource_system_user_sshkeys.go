@@ -61,6 +61,11 @@ func ResourceUserSshKeys() *schema.Resource {
 			Computed:    true,
 			Description: "SSH key fingerprint",
 		},
+		"info": {
+			Type:        schema.TypeString,
+			Computed:    true,
+			Description: "Additional key information reported by the device. Distinct from comment.",
+		},
 	}
 
 	return &schema.Resource{

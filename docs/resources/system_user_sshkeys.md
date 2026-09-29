@@ -27,6 +27,7 @@ resource "routeros_system_user_sshkeys" "test" {
 - `bits` (Number) key length
 - `fingerprint` (String) SSH key fingerprint
 - `id` (String) The ID of this resource.
+- `info` (String) Additional key information reported by the device. Distinct from comment.
 - `key_owner` (String) SSH key owner
 - `key_type` (String) key type
 - `rsa` (Boolean) key type is rsa
