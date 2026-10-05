@@ -10,8 +10,9 @@ import (
 // https://help.mikrotik.com/docs/spaces/ROS/pages/59965493/routing+route
 func ResourceIPRoute() *schema.Resource {
 	resSchema := map[string]*schema.Schema{
-		MetaResourcePath: PropResourcePath("/ip/route"),
-		MetaId:           PropId(Id),
+		MetaResourcePath:   PropResourcePath("/ip/route"),
+		MetaId:             PropId(Id),
+		MetaSetUnsetFields: PropSetUnsetFields("blackhole"),
 
 		"active": {
 			Type:        schema.TypeBool,
@@ -24,9 +25,10 @@ func ResourceIPRoute() *schema.Resource {
 		"blackhole": {
 			Type:     schema.TypeBool,
 			Optional: true,
-			Description: "It's a blackhole route. If you need to cancel route marking, then simply delete the " +
-				"parameter from the configuration of the TF. The value of the parameter (true or false) has no " +
-				"effect on the MT processing logic.",
+			Description: "It's a blackhole route. RouterOS returns it as a flag that is present with an empty value, " +
+				"so the provider reads any returned `blackhole` as true. Exactly one of `gateway` and `blackhole` " +
+				"must be set.",
+			ExactlyOneOf: []string{"gateway", "blackhole"},
 		},
 		"check_gateway": {
 			Type:         schema.TypeString,
@@ -68,9 +70,11 @@ func ResourceIPRoute() *schema.Resource {
 		},
 		"gateway": {
 			Type:     schema.TypeString,
-			Required: true,
+			Optional: true,
 			Description: "Array of IP addresses or interface names. Specifies which host or interface packets should " +
-				"be sent to (IP | interface | IP%interface | IP@table[, IP | string, [..]]).",
+				"be sent to (IP | interface | IP%interface | IP@table[, IP | string, [..]]). Omit it for a blackhole " +
+				"route. Exactly one of `gateway` and `blackhole` must be set.",
+			ExactlyOneOf: []string{"gateway", "blackhole"},
 		},
 		KeyHwOffloaded: PropHwOffloadedRo,
 		"immediate_gw": {
