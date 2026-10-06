@@ -60,8 +60,8 @@ func ResourceRoutingBgpTemplate() *schema.Resource {
 		"add_path_out": {
 			Type:         schema.TypeString,
 			Optional:     true,
+			Computed:     true,
 			Description:  "",
-			Default:      "none",
 			ValidateFunc: validation.StringInSlice([]string{"all", "none"}, false),
 		},
 		"address_families": {
